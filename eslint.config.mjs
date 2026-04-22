@@ -2,5 +2,12 @@
 import withNuxt from './.nuxt/eslint.config.mjs'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
-export default withNuxt([eslintPluginPrettierRecommended])
-// Add your custom ESLint config here
+export default withNuxt([
+  eslintPluginPrettierRecommended,
+  {
+    rules: {
+      'prettier/prettier': 'off',
+      'vue/multi-word-component-names': 'off'
+    }
+  }
+])

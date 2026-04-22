@@ -11,9 +11,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "format:fix": "prettier --write .",
     "test": "vitest",
-    "test:watch": "vitest watch",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -26,6 +26,7 @@
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.15.2",
     "@nuxt/test-utils": "^4.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "@vue/test-utils": "^2.4.6",
