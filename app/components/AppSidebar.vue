@@ -1,15 +1,38 @@
 <script setup>
 import {
-  LayoutDashboard, Users, Clock, CalendarRange, CalendarDays, Search
+  LayoutDashboard, Users, Clock, CalendarRange, CalendarDays
 } from 'lucide-vue-next'
 
-const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-  { name: 'Regu Kerja', icon: Users, path: '/regu-kerja' },
-  { name: 'Shift Kerja', icon: Clock, path: '/shift-kerja' },
-  { name: 'Generate Jadwal Kerja', icon: CalendarRange, path: '/generate' },
-  { name: 'Jadwal Kerja', icon: CalendarDays, path: '/jadwal' },
-]
+const userAuth = useCookie('user_auth')
+const rolePath = computed(() => userAuth.value?.role?.toLowerCase() || 'anggota')
+
+const menuItems = computed(() => [
+  { 
+    name: 'Dashboard', 
+    icon: LayoutDashboard, 
+    path: `/${rolePath.value}/dashboard` 
+  },
+  { 
+    name: 'Regu Kerja', 
+    icon: Users, 
+    path: `/${rolePath.value}/regu-kerja` 
+  },
+  { 
+    name: 'Shift Kerja', 
+    icon: Clock, 
+    path: `/${rolePath.value}/shift-kerja` 
+  },
+  { 
+    name: 'Generate Jadwal', 
+    icon: CalendarRange, 
+    path: `/${rolePath.value}/generate` 
+  },
+  { 
+    name: 'Jadwal Kerja', 
+    icon: CalendarDays, 
+    path: `/${rolePath.value}/jadwal` 
+  },
+])
 </script>
 
 <template>
