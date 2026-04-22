@@ -19,42 +19,38 @@ enum Role {
   ANGGOTA
 }
 
+enum JenisRegu {
+  KAPAL
+  DARAT
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
   name      String
   role      Role     @default(ANGGOTA)
+  reguId    Int?
+  regu      Regu?    @relation(fields: [reguId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Regu {
-  id              Int      @id @default(autoincrement())
-  nomor_krk       String   @unique
-  nama_krk        String
-  tipe            TipeRegu
-  jumlah_anggota  Int      @default(8)
-  urutan_terakhir Int?
-  is_aktif        Boolean  @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("regu_kerja")
-}
-
-enum TipeRegu {
-  KAPAL
-  DARAT
+  id        Int       @id @default(autoincrement())
+  nomorRegu String    @unique
+  jenis     JenisRegu @default(KAPAL)
+  anggota   User[]
+  jadwal    Jadwal[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Jadwal {
-  id         Int      @id @default(autoincrement())
-  tanggal    DateTime
-  shift      Int
-  regu_id    Int
-  keterangan String?
-
-  @@map("jadwal_kerja")
+  id        Int      @id @default(autoincrement())
+  tanggal   DateTime
+  shift     Int
+  reguId    Int
+  regu      Regu     @relation(fields: [reguId], references: [id])
+  createdAt DateTime @default(now())
 }

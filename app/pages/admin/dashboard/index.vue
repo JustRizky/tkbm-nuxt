@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-8">
     <div>
-      <h2 class="text-2xl font-bold text-gray-800">Selamat Datang, Admin!</h2>
-      <p class="text-sm text-gray-500">Jum'at, 9 Januari 2026</p>
+      <h2 class="text-2xl font-bold text-gray-800">Selamat Datang, {{ userName }}!</h2>
+      <p class="text-sm text-gray-500">{{ today }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -109,18 +109,51 @@ import {
   ArrowUpRight, Info
 } from 'lucide-vue-next'
 
-// Data Dummy untuk Statistik Atas
-const stats = [
-  { label: 'Total Regu Kapal', value: '48', icon: Ship, color: 'text-purple-600', bg: 'bg-purple-100' },
-  { label: 'Total Regu Darat', value: '67', icon: Truck, color: 'text-blue-600', bg: 'bg-blue-100' },
-  { label: 'Jadwal Hari Ini', value: '8', icon: Calendar, color: 'text-rose-600', bg: 'bg-rose-100' },
-  { label: 'Total Regu Aktif Hari Ini', value: '16', icon: Users, color: 'text-orange-600', bg: 'bg-orange-100' },
-]
+const userAuth = useCookie('user_auth')
+const userName = computed(() => userAuth.value?.name || 'User')
+const today = new Date().toLocaleDateString('id-ID', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+})
 
-// Data Dummy Aktivitas Terbaru
-const activities = [
+const { data: dashboardData, pending } = await useFetch('/api/dashboard/stats')
+const stats = computed(() => [
+  {
+    label: 'Total Regu Kapal',
+    value: dashboardData.value?.totalKapal || 0,
+    icon: Ship,
+    color: 'text-purple-600',
+    bg: 'bg-purple-100'
+  },
+  {
+    label: 'Total Regu Darat',
+    value: dashboardData.value?.totalDarat || 0,
+    icon: Truck,
+    color: 'text-blue-600',
+    bg: 'bg-blue-100'
+  },
+  {
+    label: 'Jadwal Hari Ini',
+    value: '8',
+    icon: Calendar,
+    color: 'text-rose-600',
+    bg: 'bg-rose-100'
+  },
+  {
+    label: 'Total Regu Aktif',
+    value: '16',
+    icon: Users,
+    color: 'text-orange-600',
+    bg: 'bg-orange-100'
+  },
+])
+
+const activities = ref([
   { title: 'Jadwal diexport', time: '1 jam yang lalu', icon: Calendar },
   { title: 'Jadwal diexport', time: '2 jam yang lalu', icon: Calendar },
   { title: 'Jadwal diexport', time: 'kemarin', icon: Calendar },
-]
+])
+
 </script>

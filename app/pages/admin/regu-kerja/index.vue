@@ -5,7 +5,8 @@
         <h2 class="text-2xl font-bold text-gray-800">Daftar Regu Kerja</h2>
         <p class="text-sm text-gray-500">Jum'at, 9 Januari 2026</p>
       </div>
-      <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-bold transition-all shadow-sm">
+      <button
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-bold transition-all shadow-sm">
         <Plus class="w-4 h-4" />
         Tambah Data
       </button>
@@ -25,18 +26,17 @@
       <div class="p-6 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="relative max-w-xs w-full">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input 
-            type="text" 
-            placeholder="Cari nomor atau nama KRK..." 
-            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-          />
+          <input type="text" placeholder="Cari nomor atau nama KRK..."
+            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
         </div>
         <div class="flex items-center gap-3">
-          <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 flex items-center gap-2 hover:bg-gray-50">
+          <button
+            class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 flex items-center gap-2 hover:bg-gray-50">
             <Filter class="w-4 h-4" />
             Filters
           </button>
-          <button class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 flex items-center gap-2 hover:bg-gray-50">
+          <button
+            class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 flex items-center gap-2 hover:bg-gray-50">
             Columns
             <ChevronDown class="w-4 h-4" />
           </button>
@@ -50,11 +50,16 @@
               <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
                 <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
               </th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Nomor KRK</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Jenis</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Nama Kepala Regu</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Anggota</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100"></th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                Nomor KRK</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                Jenis</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                Nama Kepala Regu</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                Anggota</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
@@ -64,12 +69,10 @@
               </td>
               <td class="px-6 py-4 text-sm font-medium text-gray-700">{{ row.nomor }}</td>
               <td class="px-6 py-4">
-                <span 
-                  :class="[
-                    'px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider',
-                    row.jenis === 'Kapal' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'
-                  ]"
-                >
+                <span :class="[
+                  'px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider',
+                  row.jenis === 'Kapal' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'
+                ]">
                   {{ row.jenis }}
                 </span>
               </td>
@@ -95,11 +98,15 @@
       <div class="p-6 border-t border-gray-50 flex items-center justify-between">
         <p class="text-xs text-gray-500">Menampilkan 1 - 7 dari 115 data regu</p>
         <div class="flex items-center gap-2">
-          <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"><ChevronLeft class="w-4 h-4" /></button>
+          <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50">
+            <ChevronLeft class="w-4 h-4" />
+          </button>
           <button class="w-8 h-8 rounded-lg bg-blue-600 text-white text-xs font-bold">1</button>
           <button class="w-8 h-8 rounded-lg hover:bg-gray-50 text-xs font-medium text-gray-600">2</button>
           <button class="w-8 h-8 rounded-lg hover:bg-gray-50 text-xs font-medium text-gray-600">3</button>
-          <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50"><ChevronRight class="w-4 h-4" /></button>
+          <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50">
+            <ChevronRight class="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>
@@ -108,7 +115,7 @@
 
 <script setup>
 import {
-  Ship, Truck, Users, LayoutGrid, Plus, 
+  Ship, Truck, Users, LayoutGrid, Plus,
   Search, Filter, ChevronDown, MoreVertical,
   ChevronLeft, ChevronRight
 } from 'lucide-vue-next'
