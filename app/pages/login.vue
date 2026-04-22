@@ -1,7 +1,8 @@
 <template>
   <div class="relative min-h-screen flex items-center justify-center bg-gray-900 font-sans">
     <div class="absolute inset-0 bg-cover bg-center z-0" style="background-image: url('/background.jpg')">
-      <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 from-[90%] to-white to-[90%] mix-blend-normal"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 from-[90%] to-white to-[90%] mix-blend-normal">
+      </div>
     </div>
 
     <div class="relative z-10 container mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -76,7 +77,7 @@ type="submit"
 </template>
 
 <script setup>
-  definePageMeta({
+definePageMeta({
   layout: false,
   alias: '/'
 })

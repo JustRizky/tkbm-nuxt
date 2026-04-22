@@ -1,10 +1,10 @@
 <script setup>
-import { 
-  LayoutDashboard, Users, Clock, CalendarRange, CalendarDays, Search 
+import {
+  LayoutDashboard, Users, Clock, CalendarRange, CalendarDays, Search
 } from 'lucide-vue-next'
 
 const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
+  { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { name: 'Regu Kerja', icon: Users, path: '/regu-kerja' },
   { name: 'Shift Kerja', icon: Clock, path: '/shift-kerja' },
   { name: 'Generate Jadwal Kerja', icon: CalendarRange, path: '/generate' },
@@ -25,24 +25,24 @@ const menuItems = [
     <div class="px-4 mb-4">
       <div class="relative">
         <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input 
-          type="text" 
-          placeholder="Search..." 
-          class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 border border-gray-200 px-1 rounded">⌘ K</span>
+        <input
+type="text" placeholder="Search..."
+          class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+        <span
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 border border-gray-200 px-1 rounded">
+          ⌘ K
+        </span>
       </div>
     </div>
 
     <nav class="flex-1 px-4 space-y-1">
-      <NuxtLink 
-        v-for="item in menuItems" 
-        :key="item.path"
-        :to="item.path"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
-        :class="item.path === '/' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100'"
-      >
-        <component :is="item.icon" class="w-5 h-5" />
+      <NuxtLink
+v-for="item in menuItems" :key="item.path" :to="item.path"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100 hover:text-blue-700 group"
+        active-class="bg-blue-50 !text-blue-700 shadow-sm">
+        <component
+:is="item.icon" class="w-5 h-5 transition-colors"
+          :class="{ 'text-blue-600': $route.path === item.path }" />
         {{ item.name }}
       </NuxtLink>
     </nav>

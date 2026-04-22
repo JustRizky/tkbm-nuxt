@@ -5,7 +5,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma/"
+  // output   = "../app/generated/prisma/"
 }
 
 datasource db {
@@ -16,13 +16,36 @@ model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
-  role      String // admin, pengurus, krk, anggota
+  role      String   @default("admin")
   createdAt DateTime @default(now())
 }
 
 model Regu {
-  id          Int    @id @default(autoincrement())
-  nama_regu   String
-  tipe        String // KAPAL / DARAT
-  jumlah_tkbm Int
+  id              Int      @id @default(autoincrement())
+  nomor_krk       String   @unique
+  nama_krk        String
+  tipe            TipeRegu
+  jumlah_anggota  Int      @default(8)
+  urutan_terakhir Int?
+  is_aktif        Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("regu_kerja")
+}
+
+enum TipeRegu {
+  KAPAL
+  DARAT
+}
+
+model Jadwal {
+  id         Int      @id @default(autoincrement())
+  tanggal    DateTime
+  shift      Int
+  regu_id    Int
+  keterangan String?
+
+  @@map("jadwal_kerja")
 }
