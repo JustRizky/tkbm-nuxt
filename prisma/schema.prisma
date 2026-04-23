@@ -48,6 +48,15 @@ model Regu {
   updatedAt    DateTime  @updatedAt
 }
 
+model Shift {
+  id         Int      @id @default(autoincrement())
+  nama       String
+  jamMulai   String
+  jamSelesai String
+  status     String   @default("AKTIF")
+  createdAt  DateTime @default(now())
+}
+
 model Jadwal {
   id        Int      @id @default(autoincrement())
   tanggal   DateTime
