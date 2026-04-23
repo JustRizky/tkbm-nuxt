@@ -3,17 +3,23 @@
     <div class="flex justify-between items-end">
       <div>
         <h2 class="text-2xl font-bold text-gray-800">Daftar Regu Kerja</h2>
-        <p class="text-sm text-gray-500">Jum'at, 9 Januari 2026</p>
+        <p class="text-sm text-gray-500">{{ currentDate }}</p>
       </div>
       <button
-        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-bold transition-all shadow-sm">
+        @click="isModalOpen = true"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-bold transition-all shadow-sm active:scale-95"
+      >
         <Plus class="w-4 h-4" />
         Tambah Data
       </button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div v-for="stat in stats" :key="stat.label" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div
+        v-for="stat in stats"
+        :key="stat.label"
+        class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+      >
         <div :class="['w-12 h-12 rounded-xl flex items-center justify-center mb-4', stat.bg]">
           <component :is="stat.icon" :class="['w-6 h-6', stat.color]" />
         </div>
@@ -23,117 +29,340 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="p-6 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div
+        class="p-6 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
         <div class="relative max-w-xs w-full">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input type="text" placeholder="Cari nomor atau nama KRK..."
-            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Cari nomor atau nama..."
+            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+          />
         </div>
-        <div class="flex items-center gap-3">
-          <button
-            class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 flex items-center gap-2 hover:bg-gray-50">
-            <Filter class="w-4 h-4" />
-            Filters
-          </button>
-          <button
-            class="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 flex items-center gap-2 hover:bg-gray-50">
-            Columns
-            <ChevronDown class="w-4 h-4" />
-          </button>
-        </div>
+        <button @click="refresh" class="text-xs font-bold text-blue-600 hover:underline">
+          Refresh Data
+        </button>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-gray-50/50">
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              </th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                Nomor KRK</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                Jenis</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                Nama Kepala Regu</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                Anggota</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-50">
-            <tr v-for="row in reguData" :key="row.nomor" class="hover:bg-gray-50/50 transition-colors">
-              <td class="px-6 py-4">
-                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              </td>
-              <td class="px-6 py-4 text-sm font-medium text-gray-700">{{ row.nomor }}</td>
-              <td class="px-6 py-4">
-                <span :class="[
-                  'px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider',
-                  row.jenis === 'Kapal' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'
-                ]">
+      <div v-if="pending" class="p-10 text-center">Loading...</div>
+
+      <div v-else-if="filteredData.length" class="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead class="w-16">#</TableHead>
+              <TableHead>Nomor KRK</TableHead>
+              <TableHead>Jenis</TableHead>
+              <TableHead>Kepala Regu</TableHead>
+              <TableHead>Anggota</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            <TableRow
+              v-for="(row, index) in filteredData"
+              :key="row.id"
+              class="hover:bg-gray-50 transition"
+            >
+              <TableCell class="text-gray-400">
+                {{ index + 1 }}
+              </TableCell>
+
+              <TableCell class="font-bold">
+                {{ row.nomorKRK }}
+              </TableCell>
+
+              <TableCell>
+                <span
+                  :class="[
+                    'px-2 py-1 rounded text-xs font-bold uppercase',
+                    row.jenis === 'KAPAL'
+                      ? 'bg-blue-100 text-blue-600'
+                      : 'bg-emerald-100 text-emerald-600'
+                  ]"
+                >
                   {{ row.jenis }}
                 </span>
-              </td>
-              <td class="px-6 py-4">
+              </TableCell>
+
+              <TableCell>
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-full bg-gray-100 overflow-hidden">
-                    <img :src="`https://ui-avatars.com/api/?name=${row.nama}&background=random`" alt="Avatar" />
+                  <div
+                    class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-xs"
+                  >
+                    {{ row.namaKepala?.charAt(0) || '?' }}
                   </div>
-                  <span class="text-sm font-semibold text-gray-800">{{ row.nama }}</span>
+                  <span>{{ row.namaKepala || '-' }}</span>
                 </div>
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-600 font-medium">{{ row.anggota }} Orang</td>
-              <td class="px-6 py-4 text-right">
-                <button class="text-gray-400 hover:text-gray-600 p-1">
-                  <MoreVertical class="w-5 h-5" />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </TableCell>
+
+              <TableCell> {{ row.totalAnggota }} Orang </TableCell>
+
+              <TableCell class="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <button class="text-gray-400 hover:text-gray-600 p-1">
+                      <MoreVertical class="w-5 h-5" />
+                    </button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click="handleEdit(row)"> Edit </DropdownMenuItem>
+                    <DropdownMenuItem @click="handleDelete(row)" class="text-red-500">
+                      Hapus
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
 
-      <div class="p-6 border-t border-gray-50 flex items-center justify-between">
-        <p class="text-xs text-gray-500">Menampilkan 1 - 7 dari 115 data regu</p>
-        <div class="flex items-center gap-2">
-          <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50">
-            <ChevronLeft class="w-4 h-4" />
-          </button>
-          <button class="w-8 h-8 rounded-lg bg-blue-600 text-white text-xs font-bold">1</button>
-          <button class="w-8 h-8 rounded-lg hover:bg-gray-50 text-xs font-medium text-gray-600">2</button>
-          <button class="w-8 h-8 rounded-lg hover:bg-gray-50 text-xs font-medium text-gray-600">3</button>
-          <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <ChevronRight class="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+      <div v-else class="p-10 text-center text-gray-500">Data tidak ditemukan</div>
     </div>
+
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="closeModal"></div>
+          <div
+            class="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform transition-all"
+          >
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+              <h3 class="text-lg font-bold text-gray-800">
+                {{ isEdit ? 'Edit Regu Kerja' : 'Tambah Regu Kerja Baru' }}
+              </h3>
+              <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+                <X class="w-5 h-5" />
+              </button>
+            </div>
+
+            <form @submit.prevent="handleSubmit" class="p-6 space-y-4">
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Nomor KRK</label>
+                <input
+                  v-model="form.nomorKRK"
+                  type="text"
+                  placeholder="333"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Jenis Regu</label>
+                <select
+                  v-model="form.jenis"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none"
+                >
+                  <option value="KAPAL">KAPAL</option>
+                  <option value="DARAT">DARAT</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Nama Kepala Regu</label>
+                <input
+                  v-model="form.namaKepala"
+                  type="text"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">Jumlah Anggota</label>
+                <input
+                  v-model.number="form.totalAnggota"
+                  type="number"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none"
+                />
+              </div>
+
+              <div class="flex gap-3 mt-6">
+                <button
+                  type="button"
+                  @click="closeModal"
+                  class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  :disabled="loading"
+                  class="flex-1 px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {{ loading ? 'Menyimpan...' : 'Simpan Data' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
+import { Ship, Truck, Users, LayoutGrid, Plus, Search, MoreVertical, X } from 'lucide-vue-next'
 import {
-  Ship, Truck, Users, LayoutGrid, Plus,
-  Search, Filter, ChevronDown, MoreVertical,
-  ChevronLeft, ChevronRight
-} from 'lucide-vue-next'
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell
+} from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
+} from '@/components/ui/dropdown-menu'
 
-const stats = [
-  { label: 'Total Regu Kerja', value: '115', icon: Users, color: 'text-purple-600', bg: 'bg-purple-100' },
-  { label: 'Total Regu Kapal', value: '48', icon: Ship, color: 'text-blue-600', bg: 'bg-blue-100' },
-  { label: 'Total Regu Darat', value: '67', icon: Truck, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-  { label: 'Regu Aktif Hari Ini', value: '16', icon: LayoutGrid, color: 'text-orange-600', bg: 'bg-orange-100' },
-]
+// -- FETCH DATA FROM API --
+const { data: response, pending, refresh } = await useFetch('/api/regu')
+const reguData = computed(() => response.value?.data || [])
 
-const reguData = [
-  { nomor: '333', jenis: 'Kapal', nama: 'Agus', anggota: 8 },
-  { nomor: '334', jenis: 'Kapal', nama: 'Bambang', anggota: 8 },
-  { nomor: '335', jenis: 'Darat', nama: 'Udin', anggota: 8 },
-  { nomor: '336', jenis: 'Darat', nama: 'Joko', anggota: 8 },
-  { nomor: '337', jenis: 'Darat', nama: 'Rizky', anggota: 8 },
-  { nomor: '338', jenis: 'Darat', nama: 'Doni', anggota: 8 },
-  { nomor: '339', jenis: 'Darat', nama: 'Fajar', anggota: 8 },
-]
+// -- PAGE STATE --
+const isModalOpen = ref(false)
+const loading = ref(false)
+const searchQuery = ref('')
+const currentDate = new Date().toLocaleDateString('id-ID', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric'
+})
+
+const form = ref({
+  nomorKRK: '',
+  jenis: 'KAPAL',
+  namaKepala: '',
+  totalAnggota: 8
+})
+
+// -- HANDLERS --
+const closeModal = () => {
+  isModalOpen.value = false
+  isEdit.value = false
+  editId.value = null
+  form.value = {
+    nomorKRK: '',
+    jenis: 'KAPAL',
+    namaKepala: '',
+    totalAnggota: 8
+  }
+}
+
+const handleSubmit = async () => {
+  loading.value = true
+  try {
+    if (isEdit.value) {
+      await $fetch('/api/regu/update', {
+        method: 'PUT',
+        body: {
+          id: editId.value,
+          ...form.value
+        }
+      })
+
+      alert('Data berhasil diupdate!')
+    } else {
+      await $fetch('/api/regu/create', {
+        method: 'POST',
+        body: form.value
+      })
+
+      alert('Sukses! Regu ' + form.value.nomorKRK + ' berhasil disimpan.')
+    }
+
+    await refresh()
+    closeModal()
+  } catch (error) {
+    alert(error.data?.statusMessage || 'Gagal menyimpan data')
+  } finally {
+    loading.value = false
+  }
+}
+
+const isEdit = ref(false)
+const editId = ref(null)
+
+const handleEdit = (row) => {
+  form.value = { ...row }
+  editId.value = row.id
+  isEdit.value = true
+  isModalOpen.value = true
+}
+
+const handleDelete = async (row) => {
+  if (confirm(`Apakah Anda yakin ingin menghapus regu ${row.nomorKRK}?`)) {
+    try {
+      await $fetch('/api/regu/delete', {
+        method: 'DELETE',
+        body: { id: row.id }
+      })
+
+      alert('Data berhasil dihapus!')
+      await refresh()
+    } catch (error) {
+      alert('Gagal menghapus: ' + error.data?.statusMessage)
+    }
+  }
+}
+
+// -- SEARCH LOGIC --
+const filteredData = computed(() => {
+  return reguData.value.filter(
+    (item) =>
+      item.nomorKRK.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      item.namaKepala.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
+// -- DYNAMIC STATS --
+const stats = computed(() => [
+  {
+    label: 'Total Regu Kerja',
+    value: reguData.value.length,
+    icon: Users,
+    color: 'text-purple-600',
+    bg: 'bg-purple-100'
+  },
+  {
+    label: 'Total Regu Kapal',
+    value: reguData.value.filter((r) => r.jenis === 'KAPAL').length,
+    icon: Ship,
+    color: 'text-blue-600',
+    bg: 'bg-blue-100'
+  },
+  {
+    label: 'Total Regu Darat',
+    value: reguData.value.filter((r) => r.jenis === 'DARAT').length,
+    icon: Truck,
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-100'
+  },
+  {
+    label: 'Update Baru',
+    value: reguData.value.length > 0 ? 'Aktif' : 'Kosong',
+    icon: LayoutGrid,
+    color: 'text-orange-600',
+    bg: 'bg-orange-100'
+  }
+])
 </script>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

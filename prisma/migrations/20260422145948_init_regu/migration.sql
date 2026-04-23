@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Regu` ADD COLUMN `namaKepala` VARCHAR(191) NULL,
+    ADD COLUMN `totalAnggota` INTEGER NOT NULL DEFAULT 0;
