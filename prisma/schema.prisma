@@ -42,6 +42,7 @@ model Regu {
   jenis        JenisRegu @default(KAPAL)
   namaKepala   String?
   totalAnggota Int       @default(0)
+  lastUsed     DateTime  @default(now())
   anggota      User[]
   jadwal       Jadwal[]
   createdAt    DateTime  @default(now())
@@ -55,13 +56,18 @@ model Shift {
   jamSelesai String
   status     String   @default("AKTIF")
   createdAt  DateTime @default(now())
+  jadwals    Jadwal[]
 }
 
 model Jadwal {
   id        Int      @id @default(autoincrement())
-  tanggal   DateTime
-  shift     Int
+  tanggal   DateTime @default(now())
   reguId    Int
   regu      Regu     @relation(fields: [reguId], references: [id])
+  shiftId   Int
+  shift     Shift    @relation(fields: [shiftId], references: [id])
+  jenis     String
+  namaKapal String?
+  status    String   @default("Aanvraag")
   createdAt DateTime @default(now())
 }
