@@ -10,39 +10,50 @@ import {
 
 const userAuth = useCookie('user_auth')
 const rolePath = computed(() => userAuth.value?.role?.toLowerCase() || 'anggota')
+const userRole = computed(() => userAuth.value?.role?.toUpperCase() || 'ANGGOTA')
 
-const menuItems = computed(() => [
-  {
-    name: 'Dashboard',
-    icon: LayoutDashboard,
-    path: `/${rolePath.value}/dashboard`
-  },
-  {
-    name: 'Regu Kerja',
-    icon: Users,
-    path: `/${rolePath.value}/regu-kerja`
-  },
-  {
-    name: 'Shift Kerja',
-    icon: Clock,
-    path: `/${rolePath.value}/shift-kerja`
-  },
-  {
-    name: 'Generate Jadwal',
-    icon: CalendarRange,
-    path: `/${rolePath.value}/generate`
-  },
-  {
-    name: 'Jadwal Kerja',
-    icon: CalendarDays,
-    path: `/${rolePath.value}/jadwal`
-  },
-  {
-    name: 'Izin Kerja',
-    icon: ClipboardList,
-    path: `/${rolePath.value}/izin-kerja`
-  }
-])
+const menuItems = computed(() => {
+  const allMenus = [
+    {
+      name: 'Dashboard',
+      icon: LayoutDashboard,
+      path: `/${rolePath.value}/dashboard`,
+      roles: ['ADMIN', 'PENGURUS', 'KRK', 'ANGGOTA']
+    },
+    {
+      name: 'Regu Kerja',
+      icon: Users,
+      path: `/${rolePath.value}/regu-kerja`,
+      roles: ['ADMIN']
+    },
+    {
+      name: 'Shift Kerja',
+      icon: Clock,
+      path: `/${rolePath.value}/shift-kerja`,
+      roles: ['ADMIN']
+    },
+    {
+      name: 'Generate Jadwal',
+      icon: CalendarRange,
+      path: `/${rolePath.value}/generate`,
+      roles: ['ADMIN']
+    },
+    {
+      name: 'Jadwal Kerja',
+      icon: CalendarDays,
+      path: `/${rolePath.value}/jadwal`,
+      roles: ['ADMIN', 'PENGURUS', 'KRK', 'ANGGOTA']
+    },
+    {
+      name: 'Izin Kerja',
+      icon: ClipboardList,
+      path: `/${rolePath.value}/izin-kerja`,
+      roles: ['ADMIN', 'KRK']
+    }
+  ]
+
+  return allMenus.filter((item) => item.roles.includes(userRole.value))
+})
 </script>
 
 <template>
