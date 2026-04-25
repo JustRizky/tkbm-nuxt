@@ -43,6 +43,7 @@ model Regu {
   namaKepala   String?
   totalAnggota Int         @default(0)
   lastUsed     DateTime    @default(now())
+  users        User[]
   anggota      User[]
   jadwal       Jadwal[]
   izinKerjas   IzinKerja[]

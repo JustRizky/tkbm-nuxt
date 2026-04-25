@@ -5,6 +5,13 @@ export default defineEventHandler(async (event) => {
     const allRegu = await prisma.regu.findMany({
       orderBy: {
         id: 'desc'
+      },
+      include: {
+        anggota: {
+          where: {
+            role: 'KRK'
+          }
+        }
       }
     })
 

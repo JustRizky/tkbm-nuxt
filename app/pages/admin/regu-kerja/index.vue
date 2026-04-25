@@ -179,6 +179,37 @@
                   class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none"
                 />
               </div>
+              <div class="pt-4 border-t border-gray-100 space-y-4">
+                <div class="flex items-center gap-2">
+                  <ShieldCheck class="w-4 h-4 text-blue-600" />
+                  <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest"
+                    >Kredensial Login KRK</span
+                  >
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Username</label>
+                    <input
+                      v-model="form.usernameKRK"
+                      type="text"
+                      placeholder="user_krk"
+                      class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
+                      :required="!isEdit"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Password</label>
+                    <input
+                      v-model="form.passwordKRK"
+                      type="password"
+                      placeholder="••••••"
+                      class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
+                      :required="!isEdit"
+                    />
+                  </div>
+                </div>
+              </div>
 
               <div class="flex gap-3 mt-6">
                 <button
@@ -241,7 +272,9 @@ const form = ref({
   nomorKRK: '',
   jenis: 'KAPAL',
   namaKepala: '',
-  totalAnggota: 8
+  totalAnggota: 8,
+  usernameKRK: '',
+  passwordKRK: ''
 })
 
 // -- HANDLERS --
@@ -253,7 +286,9 @@ const closeModal = () => {
     nomorKRK: '',
     jenis: 'KAPAL',
     namaKepala: '',
-    totalAnggota: 8
+    totalAnggota: 8,
+    usernameKRK: '',
+    passwordKRK: ''
   }
 }
 
@@ -292,7 +327,11 @@ const isEdit = ref(false)
 const editId = ref(null)
 
 const handleEdit = (row) => {
-  form.value = { ...row }
+  form.value = {
+    ...row,
+    usernameKRK: row.users && row.users.length > 0 ? row.users[0].username : '',
+    passwordKRK: ''
+  }
   editId.value = row.id
   isEdit.value = true
   isModalOpen.value = true

@@ -12,13 +12,19 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    await prisma.regu.delete({
-      where: { id: Number(id) }
+    await prisma.$transaction(async (tx) => {
+      await tx.user.deleteMany({
+        where: { reguId: Number(id) }
+      })
+
+      await tx.regu.delete({
+        where: { id: Number(id) }
+      })
     })
 
     return {
       status: 'success',
-      message: `Regu dengan ID ${id} berhasil dihapus`
+      message: `Regu dan seluruh akun terkait berhasil dihapus`
     }
   } catch (error: any) {
     throw createError({
