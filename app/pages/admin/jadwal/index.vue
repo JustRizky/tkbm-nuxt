@@ -167,7 +167,7 @@
               <TableCell>
                 <span
                   :class="[
-                    'px-2 py-1 rounded text-[10px] font-bold uppercase',
+                    'px-2 py-1 rounded text-xs font-bold uppercase',
                     row.jenis === 'KAPAL'
                       ? 'bg-blue-100 text-blue-600'
                       : 'bg-emerald-100 text-emerald-600'
@@ -179,8 +179,12 @@
               <TableCell>
                 <span
                   :class="[
-                    'px-2 py-1 rounded text-[10px] font-bold uppercase',
-                    getShiftColor(row.shift?.nama)
+                    'px-2 py-1 rounded text-xs font-bold uppercase',
+                    row.shift?.nama === 'Shift 1'
+                      ? 'bg-blue-100 text-blue-600'
+                      : row.shift?.nama === 'Shift 2'
+                        ? 'bg-emerald-100 text-emerald-600'
+                        : 'bg-red-100 text-red-600'
                   ]"
                 >
                   {{ row.shift?.nama }}
@@ -190,8 +194,14 @@
               <TableCell>
                 <span
                   :class="[
-                    'px-2 py-1 rounded text-[10px] font-bold uppercase whitespace-nowrap',
-                    getStatusColor(row.status)
+                    'px-2 py-1 rounded text-xs font-bold uppercase',
+                    row.status === 'Aanvraag'
+                      ? 'bg-black text-white'
+                      : row.status === 'Batal'
+                        ? 'bg-red-600 text-white'
+                        : row.status === 'Kapal Sandar'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-blue-600 text-white'
                   ]"
                 >
                   {{ row.status }}
@@ -400,26 +410,6 @@ const stats = computed(() => [
     bg: 'bg-orange-100'
   }
 ])
-
-// -- COLORS HELPERS --
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'Aanvraag':
-      return 'bg-slate-900 text-white'
-    case 'Kapal Sandar':
-      return 'bg-emerald-600 text-white'
-    case 'Batal':
-      return 'bg-red-600 text-white'
-    default:
-      return 'bg-blue-600 text-white'
-  }
-}
-
-const getShiftColor = (shiftName) => {
-  if (shiftName?.includes('I')) return 'bg-blue-100 text-blue-600'
-  if (shiftName?.includes('II')) return 'bg-emerald-100 text-emerald-600'
-  return 'bg-amber-100 text-amber-600'
-}
 
 // -- ACTION HANDLERS --
 const handleEdit = (row) => {
