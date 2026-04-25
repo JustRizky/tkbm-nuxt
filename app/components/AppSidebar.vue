@@ -24,7 +24,7 @@ const menuItems = computed(() => {
       name: 'Regu Kerja',
       icon: Users,
       path: `/${rolePath.value}/regu-kerja`,
-      roles: ['ADMIN']
+      roles: ['ADMIN', 'KRK']
     },
     {
       name: 'Shift Kerja',

@@ -329,7 +329,7 @@ const editId = ref(null)
 const handleEdit = (row) => {
   form.value = {
     ...row,
-    usernameKRK: row.users && row.users.length > 0 ? row.users[0].username : '',
+    usernameKRK: row.anggota && row.anggota.length > 0 ? row.anggota[0].username : '',
     passwordKRK: ''
   }
   editId.value = row.id

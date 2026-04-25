@@ -41,9 +41,8 @@ model Regu {
   nomorKRK     String      @unique
   jenis        JenisRegu   @default(KAPAL)
   namaKepala   String?
-  totalAnggota Int         @default(0)
+  totalAnggota Int         @default(8)
   lastUsed     DateTime    @default(now())
-  users        User[]
   anggota      User[]
   jadwal       Jadwal[]
   izinKerjas   IzinKerja[]
