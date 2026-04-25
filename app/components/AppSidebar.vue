@@ -1,5 +1,12 @@
 <script setup>
-import { LayoutDashboard, Users, Clock, CalendarRange, CalendarDays } from 'lucide-vue-next'
+import {
+  LayoutDashboard,
+  Users,
+  Clock,
+  CalendarRange,
+  CalendarDays,
+  ClipboardList
+} from 'lucide-vue-next'
 
 const userAuth = useCookie('user_auth')
 const rolePath = computed(() => userAuth.value?.role?.toLowerCase() || 'anggota')
@@ -29,6 +36,11 @@ const menuItems = computed(() => [
     name: 'Jadwal Kerja',
     icon: CalendarDays,
     path: `/${rolePath.value}/jadwal`
+  },
+  {
+    name: 'Izin Kerja',
+    icon: ClipboardList,
+    path: `/${rolePath.value}/izin-kerja`
   }
 ])
 </script>

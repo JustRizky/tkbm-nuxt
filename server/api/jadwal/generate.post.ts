@@ -30,20 +30,28 @@ export default defineEventHandler(async (event) => {
     const jadwalEksisting = await prisma.jadwal.findMany({
       where: {
         shiftId: shiftSekarang.id,
-        tanggal: {
-          gte: startOfToday,
-          lte: endOfToday
-        }
+        tanggal: { gte: startOfToday, lte: endOfToday }
+      },
+      select: { reguId: true }
+    })
+
+    const izinDisetujui = await prisma.izinKerja.findMany({
+      where: {
+        status: 'Disetujui',
+        tanggal: { gte: startOfToday, lte: endOfToday }
       },
       select: { reguId: true }
     })
 
     const idReguSibuk = jadwalEksisting.map((j) => j.reguId)
+    const idReguIzin = izinDisetujui.map((i) => i.reguId)
+
+    const idReguTidakTersedia = [...idReguSibuk, ...idReguIzin]
 
     const reguKapalTersedia = await prisma.regu.findMany({
       where: {
         jenis: 'KAPAL',
-        id: { notIn: idReguSibuk }
+        id: { notIn: idReguTidakTersedia }
       },
       orderBy: { lastUsed: 'asc' }
     })
@@ -51,17 +59,24 @@ export default defineEventHandler(async (event) => {
     const reguDaratTersedia = await prisma.regu.findMany({
       where: {
         jenis: 'DARAT',
-        id: { notIn: idReguSibuk }
+        id: { notIn: idReguTidakTersedia }
       },
       orderBy: { lastUsed: 'asc' }
     })
+
+    if (idReguIzin.length > 0) {
+      await prisma.regu.updateMany({
+        where: { id: { in: idReguIzin } },
+        data: { lastUsed: new Date() }
+      })
+    }
 
     const limit = Math.min(jumlahKebutuhan, reguKapalTersedia.length, reguDaratTersedia.length)
 
     if (limit === 0) {
       throw createError({
         statusCode: 400,
-        statusMessage: `Semua regu sudah ditugaskan untuk ${shiftSekarang.nama} hari ini.`
+        statusMessage: `Semua regu sudah ditugaskan atau sedang izin untuk ${shiftSekarang.nama} hari ini.`
       })
     }
 
@@ -98,7 +113,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      message: `Berhasil menambahkan ${limit} gang ke ${shiftSekarang.nama}`,
+      message: `Berhasil menambahkan ${limit} gang. (${idReguIzin.length} regu izin dilewati)`,
       data: createdJadwal
     }
   } catch (error: any) {
