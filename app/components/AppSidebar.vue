@@ -1,16 +1,181 @@
+<template>
+  <Sidebar collapsible="icon" class="border-r border-gray-200">
+    <SidebarHeader class="p-6">
+      <div class="flex items-start gap-3 group-data-[collapsible=icon]:justify-center">
+        <div
+          class="w-10 h-10 min-w-[40px] bg-blue-900 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
+        >
+          <img src="/logo.png" alt="Logo" class="w-full h-full object-cover" />
+        </div>
+        <div class="leading-tight flex-1 group-data-[collapsible=icon]:hidden">
+          <h1 class="text-xs font-bold text-gray-800 uppercase break-words">
+            Koperasi Tenaga Kerja Bongkar Muat Usaha Karya
+          </h1>
+        </div>
+      </div>
+    </SidebarHeader>
+
+    <div class="px-4 mb-4 group-data-[collapsible=icon]:hidden">
+      <div class="relative">
+        <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <SidebarInput
+          v-model="searchQuery"
+          placeholder="Cari menu..."
+          class="pl-9 bg-gray-50 border-gray-200"
+        />
+      </div>
+    </div>
+
+    <SidebarContent class="px-2">
+      <SidebarGroup>
+        <SidebarMenu>
+          <SidebarMenuItem v-for="item in menuItems" :key="item.path">
+            <SidebarMenuButton
+              as-child
+              :is-active="$route.path === item.path"
+              tooltip="item.name"
+              class="relative group/menu-button data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 transition-colors"
+            >
+              <NuxtLink :to="item.path" class="flex items-center gap-3">
+                <div
+                  class="absolute left-0 w-1 h-6 bg-blue-700 rounded-r-full opacity-0 transition-all"
+                  :class="{ 'opacity-100': $route.path === item.path }"
+                />
+                <component
+                  :is="item.icon"
+                  class="w-5 h-5"
+                  :class="{ 'text-blue-700': $route.path === item.path }"
+                />
+                <span class="group-data-[collapsible=icon]:hidden">{{ item.name }}</span>
+              </NuxtLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <div
+            v-if="menuItems.length === 0"
+            class="text-[10px] text-center text-gray-400 mt-4 group-data-[collapsible=icon]:hidden"
+          >
+            Menu tidak ditemukan
+          </div>
+        </SidebarMenu>
+      </SidebarGroup>
+    </SidebarContent>
+
+    <SidebarFooter class="p-2 border-t border-gray-100">
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <SidebarMenuButton
+                size="lg"
+                class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <div class="flex items-center gap-3 w-full">
+                  <div
+                    class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center overflow-hidden shrink-0 border border-emerald-200"
+                  >
+                    <img
+                      :src="`https://ui-avatars.com/api/?name=${userAuth?.name || 'Admin'}`"
+                      alt="User"
+                    />
+                  </div>
+                  <div
+                    class="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden"
+                  >
+                    <span class="truncate font-bold text-gray-800">{{
+                      userAuth?.name || 'Admin'
+                    }}</span>
+                    <span class="truncate text-xs text-gray-500 capitalize">{{ rolePath }}</span>
+                  </div>
+                  <ChevronsUpDown
+                    class="ml-auto size-4 group-data-[collapsible=icon]:hidden text-gray-400"
+                  />
+                </div>
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+              side="bottom"
+              align="end"
+              :side-offset="4"
+            >
+              <DropdownMenuLabel class="p-0 font-normal">
+                <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <div
+                    class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center overflow-hidden shrink-0"
+                  >
+                    <img
+                      :src="`https://ui-avatars.com/api/?name=${userAuth?.name || 'Admin'}`"
+                      alt="User"
+                    />
+                  </div>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">{{ userAuth?.name || 'Admin' }}</span>
+                    <span class="truncate text-xs text-gray-500">{{
+                      userAuth?.email || 'admin@koperasi.com'
+                    }}</span>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                @click="handleLogout"
+                class="text-red-600 cursor-pointer focus:bg-red-50 focus:text-red-600"
+              >
+                <LogOut class="mr-2 size-4" />
+                Keluar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+  </Sidebar>
+</template>
+
 <script setup>
+import { ref, computed } from 'vue'
 import {
   LayoutDashboard,
   Users,
   Clock,
   CalendarRange,
   CalendarDays,
-  ClipboardList
+  ClipboardList,
+  Search,
+  ChevronsUpDown,
+  LogOut
 } from 'lucide-vue-next'
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarInput
+} from '@/components/ui/sidebar'
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 
 const userAuth = useCookie('user_auth')
 const rolePath = computed(() => userAuth.value?.role?.toLowerCase() || 'anggota')
 const userRole = computed(() => userAuth.value?.role?.toUpperCase() || 'ANGGOTA')
+
+const searchQuery = ref('')
 
 const menuItems = computed(() => {
   const allMenus = [
@@ -26,12 +191,7 @@ const menuItems = computed(() => {
       path: `/${rolePath.value}/regu-kerja`,
       roles: ['ADMIN', 'KRK']
     },
-    {
-      name: 'Shift Kerja',
-      icon: Clock,
-      path: `/${rolePath.value}/shift-kerja`,
-      roles: ['ADMIN']
-    },
+    { name: 'Shift Kerja', icon: Clock, path: `/${rolePath.value}/shift-kerja`, roles: ['ADMIN'] },
     {
       name: 'Generate Jadwal',
       icon: CalendarRange,
@@ -52,70 +212,16 @@ const menuItems = computed(() => {
     }
   ]
 
-  return allMenus.filter((item) => item.roles.includes(userRole.value))
+  return allMenus.filter((item) => {
+    const hasRole = item.roles.includes(userRole.value)
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    return hasRole && matchesSearch
+  })
 })
+
+const handleLogout = () => {
+  const auth = useCookie('user_auth')
+  auth.value = null
+  navigateTo('/login')
+}
 </script>
-
-<template>
-  <aside
-    class="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col z-50"
-  >
-    <div class="p-6 flex items-center gap-3">
-      <div
-        class="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center text-white font-bold"
-      >
-        K
-      </div>
-      <div class="leading-tight">
-        <h1 class="text-sm font-bold text-gray-800 uppercase">Koperasi Tenaga Kerja</h1>
-        <p class="text-[10px] text-gray-500 uppercase">Bongkar Muat Usaha Karya</p>
-      </div>
-    </div>
-
-    <div class="px-4 mb-4">
-      <div class="relative">
-        <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search..."
-          class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-        <span
-          class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 border border-gray-200 px-1 rounded"
-        >
-          ⌘ K
-        </span>
-      </div>
-    </div>
-
-    <nav class="flex-1 px-4 space-y-1">
-      <NuxtLink
-        v-for="item in menuItems"
-        :key="item.path"
-        :to="item.path"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100 hover:text-blue-700 group"
-        active-class="bg-blue-50 !text-blue-700 shadow-sm"
-      >
-        <component
-          :is="item.icon"
-          class="w-5 h-5 transition-colors"
-          :class="{ 'text-blue-600': $route.path === item.path }"
-        />
-        {{ item.name }}
-      </NuxtLink>
-    </nav>
-
-    <div class="p-4 border-t border-gray-100">
-      <div class="flex items-center gap-3 px-2 py-2">
-        <div
-          class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center overflow-hidden"
-        >
-          <img src="https://ui-avatars.com/api/?name=Admin" alt="Admin" />
-        </div>
-        <div class="text-xs">
-          <p class="font-bold text-gray-800">Admin</p>
-        </div>
-      </div>
-    </div>
-  </aside>
-</template>
