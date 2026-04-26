@@ -111,23 +111,62 @@
                       <MoreVertical class="w-5 h-5" />
                     </button>
                   </DropdownMenuTrigger>
+
                   <DropdownMenuContent align="end" class="w-48 p-2">
-                    <DropdownMenuLabel
-                      class="text-[10px] font-bold uppercase text-gray-400 mb-1 px-2"
-                      >Update Keputusan</DropdownMenuLabel
+                    <template v-if="userRole === 'ADMIN'">
+                      <DropdownMenuLabel
+                        class="text-[10px] font-bold uppercase text-gray-400 mb-1 px-2"
+                      >
+                        Update Keputusan
+                      </DropdownMenuLabel>
+                      <DropdownMenuItem
+                        @click="handleAction(row, 'Disetujui')"
+                        class="text-emerald-600 cursor-pointer font-bold focus:bg-emerald-50 rounded-md"
+                      >
+                        <CheckCircle2 class="w-4 h-4 mr-2" /> Setujui Izin
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        @click="handleAction(row, 'Ditolak')"
+                        class="text-red-600 cursor-pointer font-bold focus:bg-red-50 rounded-md"
+                      >
+                        <XCircle class="w-4 h-4 mr-2" /> Tolak Izin
+                      </DropdownMenuItem>
+                    </template>
+
+                    <template v-else-if="isKRK">
+                      <div v-if="row.status === 'Menunggu Persetujuan'">
+                        <DropdownMenuLabel
+                          class="text-[10px] font-bold uppercase text-gray-400 mb-1 px-2"
+                        >
+                          Kelola Pengajuan
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem
+                          @click="openEditModal(row)"
+                          class="text-blue-600 cursor-pointer font-bold focus:bg-blue-50 rounded-md"
+                        >
+                          <Pencil class="w-4 h-4 mr-2" /> Edit Alasan
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          @click="handleDelete(row)"
+                          class="text-red-600 cursor-pointer font-bold focus:bg-red-50 rounded-md"
+                        >
+                          <Trash2 class="w-4 h-4 mr-2" /> Batalkan/Hapus
+                        </DropdownMenuItem>
+                      </div>
+                      <span
+                        v-else
+                        class="text-[10px] text-gray-400 px-2 italic text-center block py-1"
+                      >
+                        Sudah {{ row.status }}
+                      </span>
+                    </template>
+
+                    <span
+                      v-else
+                      class="text-[10px] text-gray-400 px-2 italic text-center block py-1"
                     >
-                    <DropdownMenuItem
-                      @click="handleAction(row, 'Disetujui')"
-                      class="text-emerald-600 cursor-pointer font-bold focus:bg-emerald-50 rounded-md"
-                    >
-                      <CheckCircle2 class="w-4 h-4 mr-2" /> Setujui Izin
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      @click="handleAction(row, 'Ditolak')"
-                      class="text-red-600 cursor-pointer font-bold focus:bg-red-50 rounded-md"
-                    >
-                      <XCircle class="w-4 h-4 mr-2" /> Tolak Izin
-                    </DropdownMenuItem>
+                      Tidak ada akses aksi
+                    </span>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -144,11 +183,11 @@
       <Transition name="fade">
         <div v-if="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="closeModal"></div>
-          <div
-            class="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform transition-all"
-          >
+          <div class="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-              <h3 class="text-lg font-bold text-gray-800">Ajukan Izin Kerja</h3>
+              <h3 class="text-lg font-bold text-gray-800">
+                {{ editId ? 'Edit Alasan Izin' : 'Ajukan Izin Kerja' }}
+              </h3>
               <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
                 <X class="w-5 h-5" />
               </button>
@@ -161,8 +200,7 @@
                 <textarea
                   v-model="formIzin.alasan"
                   rows="3"
-                  placeholder="Sebutkan alasan (Sakit/Izin Keluarga/Lainnya)..."
-                  class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 text-sm transition-all"
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 text-sm"
                   required
                 ></textarea>
               </div>
@@ -170,16 +208,16 @@
                 <button
                   type="button"
                   @click="closeModal"
-                  class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 text-sm"
+                  class="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg text-sm"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   :disabled="loading"
-                  class="flex-1 px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm transition-all"
+                  class="flex-1 px-4 py-2 bg-blue-600 text-white font-bold rounded-lg text-sm transition-all"
                 >
-                  {{ loading ? 'Mengirim...' : 'Kirim Pengajuan' }}
+                  {{ loading ? 'Mengirim...' : editId ? 'Simpan Perubahan' : 'Kirim Pengajuan' }}
                 </button>
               </div>
             </form>
@@ -200,7 +238,9 @@ import {
   Search,
   MoreVertical,
   Plus,
-  X
+  X,
+  Pencil,
+  Trash2
 } from 'lucide-vue-next'
 
 // DATA FETCHING
@@ -267,6 +307,13 @@ const getStatusClass = (status) => {
   return 'bg-orange-100 text-orange-600'
 }
 
+const editId = ref(null)
+const openEditModal = (row) => {
+  editId.value = row.id
+  formIzin.value.alasan = row.alasan
+  isModalOpen.value = true
+}
+
 const openAddModal = () => {
   formIzin.value.alasan = ''
   isModalOpen.value = true
@@ -274,6 +321,8 @@ const openAddModal = () => {
 
 const closeModal = () => {
   isModalOpen.value = false
+  editId.value = null
+  formIzin.value.alasan = ''
 }
 
 const handleAction = async (row, status) => {
@@ -293,17 +342,38 @@ const handleSubmitIzin = async () => {
   if (!userAuth.value?.reguId) return alert('Data Regu Anda tidak ditemukan')
 
   loading.value = true
+  const url = editId.value ? '/api/izin/update-alasan' : '/api/izin/create'
+  const method = editId.value ? 'PUT' : 'POST'
+
   try {
-    await $fetch('/api/izin/create', {
-      method: 'POST',
-      body: { alasan: formIzin.value.alasan }
+    await $fetch(url, {
+      method,
+      body: {
+        id: editId.value,
+        alasan: formIzin.value.alasan
+      }
     })
     await refresh()
     closeModal()
   } catch (error) {
-    alert('Gagal mengajukan izin')
+    alert(error.data?.statusMessage || 'Gagal memproses izin')
   } finally {
     loading.value = false
+  }
+}
+
+const handleDelete = async (row) => {
+  if (!confirm('Apakah Anda yakin ingin membatalkan pengajuan izin ini?')) return
+
+  try {
+    await $fetch('/api/izin/delete', {
+      method: 'DELETE',
+      body: { id: row.id }
+    })
+    alert('Pengajuan berhasil dihapus')
+    await refresh()
+  } catch (error) {
+    alert('Gagal menghapus pengajuan')
   }
 }
 

@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
     if (idReguIzin.length > 0) {
       await prisma.regu.updateMany({
         where: { id: { in: idReguIzin } },
-        data: { lastUsed: new Date() }
+        data: { lastUsed: sekarang }
       })
     }
 

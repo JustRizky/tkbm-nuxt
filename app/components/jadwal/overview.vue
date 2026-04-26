@@ -208,7 +208,7 @@
                 </span>
               </TableCell>
               <TableCell class="text-right">
-                <DropdownMenu>
+                <DropdownMenu v-if="userRole === 'ADMIN'">
                   <DropdownMenuTrigger as-child>
                     <button class="text-gray-400 hover:text-gray-600 p-1 outline-none">
                       <MoreVertical class="w-5 h-5" />
