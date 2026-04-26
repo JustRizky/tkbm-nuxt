@@ -1,8 +1,7 @@
 <template>
   <div class="space-y-8">
     <div>
-      <h2 class="text-2xl font-bold text-gray-800">Selamat Datang, {{ userName }}!</h2>
-      <p class="text-sm text-gray-500">{{ today }}</p>
+      <PageHeader />
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

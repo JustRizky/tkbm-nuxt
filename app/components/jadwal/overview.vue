@@ -2,8 +2,7 @@
   <div class="space-y-8">
     <div class="flex justify-between items-end">
       <div>
-        <h2 class="text-2xl font-bold text-gray-800">Daftar Jadwal Kerja</h2>
-        <p class="text-sm text-gray-500">{{ currentDate }}</p>
+        <PageHeader />
       </div>
       <DropdownMenu v-if="canExport">
         <DropdownMenuTrigger as-child>

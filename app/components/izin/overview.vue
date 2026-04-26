@@ -2,8 +2,7 @@
   <div class="space-y-8">
     <div class="flex justify-between items-end">
       <div>
-        <h2 class="text-2xl font-bold text-gray-800">Persetujuan Izin Kerja</h2>
-        <p class="text-sm text-gray-500">{{ currentDate }}</p>
+        <PageHeader />
       </div>
 
       <button
@@ -243,24 +242,19 @@ import {
   Trash2
 } from 'lucide-vue-next'
 
-// DATA FETCHING
-// Pastikan API index.get.ts melakukan { include: { regu: true } }
 const { data: response, pending, refresh } = await useFetch('/api/izin')
 const izinData = computed(() => response.value?.data || [])
 
-// AUTH & ROLE
 const userAuth = useCookie('user_auth')
 const userRole = computed(() => userAuth.value?.role?.toUpperCase() || 'ANGGOTA')
 const isKRK = computed(() => userRole.value === 'KRK')
 
-// STATE
 const searchQuery = ref('')
 const currentTime = ref(new Date())
 const isModalOpen = ref(false)
 const loading = ref(false)
 const formIzin = ref({ alasan: '' })
 
-// Perbaikan: Akses pencarian melalui objek regu
 const filteredData = computed(() => {
   const q = searchQuery.value.toLowerCase()
   return izinData.value.filter(
@@ -300,7 +294,6 @@ const stats = computed(() => [
   }
 ])
 
-// METHODS
 const getStatusClass = (status) => {
   if (status === 'Disetujui') return 'bg-emerald-500 text-white'
   if (status === 'Ditolak') return 'bg-red-500 text-white'
@@ -328,7 +321,6 @@ const closeModal = () => {
 const handleAction = async (row, status) => {
   try {
     await $fetch('/api/izin/update', {
-      // Pastikan endpoint ini ada
       method: 'PUT',
       body: { id: row.id, status }
     })
@@ -377,7 +369,6 @@ const handleDelete = async (row) => {
   }
 }
 
-// DATE HELPERS
 const currentDate = computed(() =>
   currentTime.value.toLocaleDateString('id-ID', {
     weekday: 'long',
