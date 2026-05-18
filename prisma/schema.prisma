@@ -78,7 +78,7 @@ model IzinKerja {
   tanggal     DateTime @default(now())
   reguId      Int
   regu        Regu     @relation(fields: [reguId], references: [id])
-  alasan      String   @db.Text
+  alasan      String
   status      String   @default("Menunggu Persetujuan")
   isProcessed Boolean  @default(false)
   shiftId     Int?
