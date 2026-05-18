@@ -28,7 +28,7 @@ export default defineNuxtConfig({
   },
   nitro: {
     externals: {
-      inline: ['@prisma/client']
+      inline: ['@prisma/client', '.prisma/client']
     }
   }
 })
