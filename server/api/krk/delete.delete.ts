@@ -20,7 +20,8 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Gagal menghapus data dari database'
+      statusMessage: 'Gagal menghapus data dari database',
+      cause: error
     })
   }
 })

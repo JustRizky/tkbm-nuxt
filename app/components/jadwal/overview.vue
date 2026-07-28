@@ -61,8 +61,11 @@
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="space-y-1">
-          <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Filter Tanggal</label>
+          <label for="filterTanggal" class="text-[10px] font-bold text-gray-400 uppercase ml-1"
+            >Filter Tanggal</label
+          >
           <input
+            id="filterTanggal"
             type="date"
             v-model="filter.tanggal"
             class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"

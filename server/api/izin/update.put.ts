@@ -24,10 +24,11 @@ export default defineEventHandler(async (event) => {
       message: `Izin berhasil ${status}`,
       data: updatedIzin
     }
-  } catch (error: any) {
+  } catch (error) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Gagal memperbarui status izin'
+      statusMessage: 'Gagal memperbarui status izin',
+      cause: error
     })
   }
 })
