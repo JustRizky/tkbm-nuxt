@@ -5,7 +5,7 @@ export default defineEventHandler((event) => {
     try {
       const user = JSON.parse(userAuth)
       event.context.user = user
-    } catch (e) {
+    } catch {
       event.context.user = null
     }
   }
