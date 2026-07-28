@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
       where: { id: Number(body.id) }
     })
     return { status: 'success', message: 'Shift dihapus' }
-  } catch (error: any) {
-    throw createError({ statusCode: 500, statusMessage: 'Gagal menghapus shift' })
+  } catch (error) {
+    throw createError({ statusCode: 500, statusMessage: 'Gagal menghapus shift', cause: error })
   }
 })

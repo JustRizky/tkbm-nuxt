@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
       }
     })
     return { status: 'success', data: updated }
-  } catch (error: any) {
-    throw createError({ statusCode: 500, statusMessage: 'Gagal update shift' })
+  } catch (error) {
+    throw createError({ statusCode: 500, statusMessage: 'Gagal update shift', cause: error })
   }
 })
